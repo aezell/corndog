@@ -1,0 +1,13 @@
+*.pyc
+env
+docs/build
+.*.tmp
+*.egg-info
+build
+dist
+*.tar.gz
+.coverage
+tmtags
+*~
+\#*\#
+*.zip

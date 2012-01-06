@@ -1,0 +1,54 @@
+import argparse
+import redis
+
+
+def cook_that_corndog(args):
+    r = connect(args.host, args.port)
+    command, argument = parse_command(args.command)
+    possibles = globals().copy()
+    possibles.update(locals())
+    custom_method = possibles.get(command)
+    if custom_method:
+        if argument:
+            print "custom with argument"
+            print custom_method(r, argument)
+        else:
+            print "custom"
+            print custom_method(r)
+
+
+def connect(host, port):
+    return redis.StrictRedis(host=host, port=int(port))
+
+
+def my_randomkey(r):
+    return r.randomkey()
+
+
+def my_type(r, argument):
+    return r.type(argument)
+
+
+def parse_command(command):
+    parts = command.split(' ')
+    command = parts[0]
+    argument = None
+    if len(parts) > 1:
+        argument = parts[1]
+    return command, argument
+
+if __name__ == '__main__':
+    parser = argparse.ArgumentParser(description="Smart Redis commands.")
+    parser.add_argument('command', action='store',
+                    help='The command you wish to run.')
+    parser.add_argument('--host', action='store', dest='host', type=str,
+                    default='127.0.0.1',
+                    help='What Redis host should we use?')
+    parser.add_argument('--port', action='store', dest='port', type=str,
+                    default='6379',
+                    help='What Redis port should we use?')
+    args = parser.parse_args()
+
+    cook_that_corndog(args)
+
+    exit()
